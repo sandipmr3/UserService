@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     public User saveUser(User user) {
 
       String randomuserID =   UUID.randomUUID().toString();
-      user.setUserId(randomuserID);
+      user.setId(randomuserID);
 
       return userRepository.save(user);
 
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         //http://localhost:8083/ratings/user/85887e60-b0bc-4f6c-a866-630e3e168905
 
 
-        Rating[] ratingsOfuser =   restTemplate.getForObject("http://RATING-SERVICE/ratings/user/"+user.getUserId(), Rating[].class);
+        Rating[] ratingsOfuser =   restTemplate.getForObject("http://RATING-SERVICE/ratings/user/"+user.getId(), Rating[].class);
 
         List<Rating> ratings = Arrays.stream(ratingsOfuser).toList();
 

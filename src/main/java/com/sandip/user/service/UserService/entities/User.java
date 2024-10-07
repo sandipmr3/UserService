@@ -19,7 +19,7 @@ public class User {
     @Id
     @Column(name="ID")
     @NotBlank(message = "userId should not be null")
-    private String userId;
+    private String id;
     @Column(name="NAME")
     @NotBlank(message = "name should not be null")
     private  String name;
