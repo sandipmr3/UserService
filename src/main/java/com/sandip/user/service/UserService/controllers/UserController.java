@@ -73,6 +73,15 @@ public class UserController {
         return ResponseEntity.ok(user);
 
     }
+    
+    @GetMapping("/isNewController/{emailId}")
+    public ResponseEntity<User> newController(@PathVariable String emailId){
+
+        System.out.println("Calling controller" + emailId);
+        User user = userService.getUserByEmail(emailId);
+        return ResponseEntity.ok(user);
+
+    }
 
 /*    @GetMapping("/isUserAuthenticated/{emailId}")
     public ResponseEntity<User> isUserAuthenticatedByEmail(@PathVariable String emailId){
