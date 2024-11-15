@@ -2,6 +2,9 @@ package com.sandip.user.service.UserService.controllers;
 
 import com.sandip.user.service.UserService.entities.User;
 import com.sandip.user.service.UserService.services.UserService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -10,10 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Api(value = "User Controller", tags = {"User"})
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -26,9 +32,20 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user1);
     }
+    
+    @PutMapping("/update")
+    public ResponseEntity updateUser(@RequestBody User user){
+
+        User updatedUser = userService.updateUser(user);
+    	System.out.println("Updated User" + updatedUser.toString());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(updatedUser);
+    	//return null;
+    }
 
     // Single user get
 
+    @ApiOperation(value = "Get User by ID", response = User.class)
     @GetMapping("/{userId}")
     public ResponseEntity<User> getSingleUser(@PathVariable String userId){
 
@@ -43,6 +60,7 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUser(){
 
         List<User> allUser = userService.getAllUser();
+        
         return ResponseEntity.ok(allUser);
 
     }
@@ -68,11 +86,15 @@ public class UserController {
 
     // Delete user based on id
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@PathVariable String userId){
-
-        String isDelete = userService.deleteUser(userId);
-        return ResponseEntity.ok(isDelete);
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable String userId){
+    	
+		  String isDelete = userService.deleteUser(userId);
+		  	Map<String, String> response = new HashMap<>();
+	        response.put("status", isDelete);
+	        response.put("message", "User deleted successfully");
+	        
+	      return ResponseEntity.ok(response);	
 
     }
 

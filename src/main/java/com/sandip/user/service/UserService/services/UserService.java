@@ -10,6 +10,8 @@ public interface UserService {
 
 
     User saveUser(User user);
+    
+    User updateUser(User user);
 
     List<User> getAllUser();
 

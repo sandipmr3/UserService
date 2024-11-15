@@ -7,8 +7,13 @@ import com.sandip.user.service.UserService.exception.ResourceNotFoundException;
 import com.sandip.user.service.UserService.external.services.HotelService;
 import com.sandip.user.service.UserService.repositories.UserRepository;
 import com.sandip.user.service.UserService.services.UserService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     HotelService hotelService;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public User saveUser(User user) {
@@ -49,7 +57,7 @@ public class UserServiceImpl implements UserService {
         //http://localhost:8083/ratings/user/85887e60-b0bc-4f6c-a866-630e3e168905
 
 
-        Rating[] ratingsOfuser =   restTemplate.getForObject("http://RATING-SERVICE/ratings/user/"+user.getId(), Rating[].class);
+        Rating[] ratingsOfuser =   restTemplate.getForObject("http://RATING-SERVICE-PROD/ratings/user/"+user.getId(), Rating[].class);
 
         List<Rating> ratings = Arrays.stream(ratingsOfuser).toList();
 
@@ -89,4 +97,27 @@ public class UserServiceImpl implements UserService {
          userRepository.deleteById(userId);
          return "OK";
     }
+
+    @Transactional
+    @Override
+    public User updateUser(User user) {
+        String query = "UPDATE User u SET u.name = :name, u.email = :email, " +
+                       "u.password = :password, u.phonenumber = :phonenumber " +
+                       "WHERE u.id = :id";
+        
+        int rowsUpdated = entityManager.createQuery(query)
+            .setParameter("name", user.getName())
+            .setParameter("email", user.getEmail())
+            .setParameter("password", user.getPassword())
+            .setParameter("phonenumber", user.getPhonenumber())
+            .setParameter("id", user.getId())
+            .executeUpdate();
+        
+        if (rowsUpdated > 0) {
+            return user;  // Return the updated user
+        } else {
+            throw new RuntimeException("Failed to update user with ID " + user.getId());
+        }
+    }
+    
 }
